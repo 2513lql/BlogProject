@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.FriendMapper">
+    <select id="queryFriendsByUserId" resultMap="resultFriendMap" parameterType="java.lang.String">
+        SELECT * FROM tb_friend f , tb_user u WHERE f.friendId = u.userId AND f.uId=#{userId}
+    </select>
+
+    <resultMap type="com.lql.domain.Friend" id="resultFriendMap">
+        <result column="id" property="id"/>
+        <result column="uId" property="userId"/>
+        <association property="friend" javaType="com.lql.domain.User">
+            <result column="userId" property="userId"/>
+            <result column="userName" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="email" property="email"/>
+            <result column="profession" property="profession"/>
+            <result column="address" property="address"/>
+            <result column="introduction" property="introduction"/>
+            <result column="lastVisitIP" property="lastVisitIP"/>
+            <result column="lastVisitTime" property="lastVisitTime"/>
+            <result column="registeDate" property="registeDate"/>
+            <result column="pictureUrl" property="pictureUrl"/>
+            <result column="role" property="role"/>
+        </association>
+    </resultMap>
+
+    <select id="queryFriendsCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT COUNT(*) FROM tb_friend WHERE userId=#{userId}
+    </select>
+
+    <insert id="addNewFriend" parameterType="com.lql.domain.Friend">
+        INSERT INTO tb_friend(uId,friendId) VALUES (#{userId},#{friend.userId})
+    </insert>
+
+    <delete id="deleteFriendByFriend" parameterType="com.lql.domain.Friend">
+        DELETE FROM tb_friend WHERE uId = #{userId} AND friendId = #{friend.userId}
+    </delete>
+
+    <select id="queryFriendByFriend" resultType="java.lang.Integer" parameterType="com.lql.domain.Friend">
+        SELECT COUNT(*) FROM tb_friend WHERE uId = #{userId} AND friendId = #{friend.userId}
+    </select>
+</mapper>

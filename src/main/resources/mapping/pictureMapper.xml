@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.PictureMapper">
+    <select id="queryPicturesByPictureKind" resultMap="resultPictureMap" parameterType="java.lang.Integer">
+       SELECT * FROM tb_picture p , tb_picturekind k WHERE p.pictureKindId=k.pictureKindId AND p.pictureKindId=#{pictureKindId}
+    </select>
+
+    <resultMap type="com.lql.domain.Picture" id="resultPictureMap">
+        <result column="pictureId" property="pictureId"/>
+        <result column="pictureUrl" property="pictureUrl"/>
+        <association property="pictureKind" javaType="com.lql.domain.PictureKind">
+            <result column="pictureKindId" property="pictureKindId"/>
+            <result column="userId" property="userId"/>
+            <result column="kindName" property="kindName"/>
+        </association>
+    </resultMap>
+
+    <insert id="insertBatch" parameterType="List">
+
+        INSERT INTO tb_picture(pictureKindId,pictureUrl)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.pictureKind.pictureKindId} , #{item.pictureUrl})
+        </foreach>
+
+    </insert>
+
+</mapper>

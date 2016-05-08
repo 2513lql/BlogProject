@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.StateMapper">
+    <select id="queryStatesByUserId" resultMap="resultStateMap" parameterType="java.lang.String">
+        SELECT * FROM tb_state s , tb_user u WHERE s.userId=u.userId AND s.userId=#{userId}
+    </select>
+
+    <resultMap type="com.lql.domain.State" id="resultStateMap">
+        <result column="id" property="id"/>
+        <result column="content" property="content"/>
+        <result column="pictures" property="pictures"></result>
+        <result column="publishDate" property="publishDate"></result>
+        <result column="security" property="security"></result>
+        <association property="user" javaType="com.lql.domain.User">
+            <result column="userId" property="userId"/>
+            <result column="userName" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="email" property="email"/>
+            <result column="profession" property="profession"/>
+            <result column="address" property="address"/>
+            <result column="introduction" property="introduction"/>
+            <result column="lastVisitIP" property="lastVisitIP"/>
+            <result column="lastVisitTime" property="lastVisitTime"/>
+            <result column="registeDate" property="registeDate"/>
+            <result column="pictureUrl" property="pictureUrl"/>
+            <result column="role" property="role"/>
+        </association>
+    </resultMap>
+
+    <insert id="saveNewState" parameterType="com.lql.domain.State">
+        INSERT INTO tb_state(userId,content,pictures,publishDate,security) VALUES (#{user.userId},#{content},#{pictures},#{publishDate},#{security});
+    </insert>
+
+    <delete id="deleteStateById" parameterType="java.lang.Integer">
+        DELETE FROM tb_state WHERE id=#{id}
+    </delete>
+
+</mapper>
