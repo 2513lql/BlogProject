@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.BlogMapper">
+    <select id="queryBlogs" resultMap="resultBlogMap">
+        SELECT * FROM tb_blog b , tb_user u,tb_blogKind k WHERE b.userId = u.userId AND b.blogkind = k.kindId
+    </select>
+
+    <select id="queryBlogsByKind" resultMap="resultBlogMap" parameterType="java.lang.Integer">
+        SELECT * FROM tb_blog b , tb_user u,tb_blogKind k WHERE b.userId = u.userId AND b.blogkind = k.kindId AND b.blogKind=#{blogKindId}
+    </select>
+
+
+    <select id="queryBlogsByUserId" resultMap="resultBlogMap" parameterType="java.lang.String">
+        SELECT * FROM tb_blog b , tb_user u,tb_blogKind k WHERE b.userId = u.userId AND b.blogkind = k.kindId
+       AND b.userId=#{userId}
+    </select>
+
+    <select id="queryBlogByBlogId" resultMap="resultBlogMap" parameterType="java.lang.Integer">
+        SELECT * FROM tb_blog b , tb_user u,tb_blogKind k WHERE b.userId = u.userId AND b.blogkind = k.kindId
+        AND b.blogId=#{blogId}
+    </select>
+    <select id="queryBlogsCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM tb_blog
+    </select>
+
+    <select id="queryBlogsCountByKind" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT COUNT(*) FROM tb_blog WHERE blogKind=#{blogKindId}
+    </select>
+
+
+
+    <resultMap type="com.lql.domain.Blog" id="resultBlogMap">
+        <result column="blogId" property="blogId"/>
+        <result column="blogTitle" property="blogTitle"/>
+        <result column="blogText" property="blogText"/>
+        <result column="publishDate" property="publishDate"/>
+        <result column="pictures" property="pictures"/>
+        <result column="css" property="css"/>
+        <result column="viewTimes" property="viewTimes"/>
+        <result column="commentTimes" property="commentTimes"/>
+        <association  property="user" javaType="com.lql.domain.User">
+            <result column="userId" property="userId"/>
+            <result column="userName" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="email" property="email"/>
+            <result column="profession" property="profession"/>
+            <result column="address" property="address"/>
+            <result column="introduction" property="introduction"/>
+            <result column="lastVisitIP" property="lastVisitIP"/>
+            <result column="lastVisitTime" property="lastVisitTime"/>
+            <result column="registeDate" property="registeDate"/>
+            <result column="pictureUrl" property="pictureUrl"/>
+            <result column="role" property="role"/>
+        </association>
+        <association property="blogKind" javaType="com.lql.domain.BlogKind">
+            <result column="kindId" property="kindId"></result>
+            <result column="kindName" property="kindName"></result>
+        </association>
+    </resultMap>
+
+    <insert id="addNewBlog" parameterType="com.lql.domain.Blog">
+
+        INSERT INTO
+        tb_blog(blogTitle,blogText,blogKind,publishDate,userId,pictures,css,viewTimes,commentTimes)
+        VALUES(#{blogTitle},#{blogText},#{blogKind.kindId},#{publishDate},#{user.userId},#{pictures},#{css},${0},${0})
+
+    </insert>
+
+    <delete id="deleteBlogByBlogId" parameterType="java.lang.Integer">
+        DELETE FROM tb_blog WHERE blogId=#{blogId}
+    </delete>
+
+    <update id="updateCommentTimes" parameterType="java.lang.Integer">
+        UPDATE tb_blog SET commentTimes = commentTimes + 1 WHERE blogId=#{blogId}
+    </update>
+
+    <update id="updateViewTimes" parameterType="java.lang.Integer">
+        UPDATE tb_blog SET viewTimes = viewTimes + 1 WHERE blogId=#{blogId}
+    </update>
+
+    <update id="updateBlogInfo" parameterType="com.lql.domain.Blog">
+        UPDATE tb_blog
+        <set>
+            <if test="blogTitle != null">blogTitle=#{blogTitle},</if>
+            <if test="blogText != null">blogText=#{blogText},</if>
+            <if test="blogKind != null">blogKind=#{blogKind.kindId},</if>
+            <if test="pictures != null">pictures=#{pictures},</if>
+            <if test="css != null">css=#{css},</if>
+        </set>
+        WHERE blogId=#{blogId}
+    </update>
+</mapper>

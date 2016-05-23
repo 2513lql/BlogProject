@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.PictureKindMapper">
+    <select id="queryPictureKindsByUserId" resultMap="resultPictureKindMap" parameterType="java.lang.String">
+        SELECT * FROM tb_picturekind WHERE userId=#{userId}
+    </select>
+
+    <resultMap type="com.lql.domain.PictureKind" id="resultPictureKindMap">
+        <result column="pictureKindId" property="pictureKindId"/>
+        <result column="userId" property="userId"/>
+        <result column="kindName" property="kindName"/>
+    </resultMap>
+
+    <insert id="addNewPictureKind" parameterType="com.lql.domain.PictureKind">
+        INSERT INTO tb_picturekind(userId,kindName) VALUES (#{userId},#{kindName})
+    </insert>
+
+</mapper>

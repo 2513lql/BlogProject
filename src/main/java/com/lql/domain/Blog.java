@@ -19,7 +19,7 @@ public class Blog implements Serializable{
     private String pictures;
     private String css;
     private Integer viewTimes;
-    private int isComented;
+    private int commentTimes;
 
     public Blog(){
 
@@ -101,11 +101,11 @@ public class Blog implements Serializable{
         this.viewTimes = viewTimes;
     }
 
-    public int getIsComented() {
-        return isComented;
+    public int getCommentTimes() {
+        return commentTimes;
     }
 
-    public void setIsComented(int isComented) {
-        this.isComented = isComented;
+    public void setCommentTimes(int commentTimes) {
+        this.commentTimes = commentTimes;
     }
 }

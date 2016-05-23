@@ -1,5 +1,6 @@
 package com.lql.service.imp;
 
+import com.github.pagehelper.PageHelper;
 import com.lql.dao.BlogMapper;
 import com.lql.domain.Blog;
 import com.lql.service.BlogService;
@@ -24,12 +25,30 @@ public class BlogServiceImp implements BlogService{
         return blogs;
     }
 
-    public List<Blog> queryBlogsByUserId(String userId) {
+    public List<Blog> getBlogsByKind(Integer blogKindId) {
+        List<Blog> blogs = blogMapper.queryBlogsByKind(blogKindId);
+        return blogs;
+    }
+
+    public List<Blog> getBlogsDividePageByKind(Integer currentPage, Integer pageSize,Integer blogKindId) {
+        PageHelper.startPage(currentPage,pageSize);
+        List<Blog> blogs = blogMapper.queryBlogsByKind(blogKindId);
+        return blogs;
+    }
+
+
+    public List<Blog> getBlogsDividePages(int currentPage, int pageSize) {
+        PageHelper.startPage(currentPage,pageSize);
+        List<Blog> blogs = blogMapper.queryBlogs();
+        return blogs;
+    }
+
+    public List<Blog> getBlogsByUserId(String userId) {
         List<Blog> blogs = blogMapper.queryBlogsByUserId(userId);
         return blogs;
     }
 
-    public Blog queryBlogByBlogId(Integer blogId) {
+    public Blog getBlogByBlogId(Integer blogId) {
         return blogMapper.queryBlogByBlogId(blogId);
     }
 
@@ -41,8 +60,8 @@ public class BlogServiceImp implements BlogService{
         blogMapper.deleteBlogByBlogId(blogId);
     }
 
-    public void updateCommentedState(Blog blog) {
-        blogMapper.updateCommentedState(blog);
+    public void updateCommentTimes(Integer blogId) {
+        blogMapper.updateCommentTimes(blogId);
     }
 
     public void updateViewTimes(Integer blogId) {
@@ -53,4 +72,11 @@ public class BlogServiceImp implements BlogService{
         blogMapper.updateBlogInfo(blog);
     }
 
+    public int getBlogsCount() {
+        return blogMapper.queryBlogsCount();
+    }
+
+    public int getBlogsCountByKind(Integer blogKindId) {
+        return blogMapper.queryBlogsCountByKind(blogKindId);
+    }
 }

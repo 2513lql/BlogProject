@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd 
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+	<!-- 自动扫面注解 -->
+	<context:component-scan base-package="com.lql.service"></context:component-scan>
+	<!-- 自动加载属性配置文件 如果需要制定属性文件的编码方式，比如指定为UTF-8的格式，则需要将UTF-8配置为一个bean 否则会报错 -->
+	<context:property-placeholder location="classpath:config/jdbc.properties"
+		file-encoding="UTF-8" />
+	
+	
+	<!-- 这说明，你想要我们应用中所有的URLs都进行安全保护，只有具有"ROLE_USER"角色才能访问它们。
+	<http>元素是所有web相关的命名空间功能的父类。<intercept-url>元素定义了一个pattern属性用于匹配用户的请求URL，
+	\匹配时采用的是ant路径类型语法，你也可以选择使用正则表达式进行匹配。
+	而access属性则定义了匹配pattern的请求访问时所需的角色，使用默认配置的话，这通常是以逗号分隔的一串角色，
+	为了能通过访问控制用户必须具有其中的一个角色。前缀"ROLE_"是一个标记，
+	表明应该与用户的权限进行简单的比较，换句话说，应该使用基于角色的检查。
+	Spring Security中的访问控制不局限于使用简单的角色，稍后我们将看到这个解释有什么不同。 -->
+ 	<!-- <security:http auto-config="true">
+		<security:intercept-url pattern="/**" access="ROLE_USER"/>
+	</security:http>
+	<security:authentication-manager>
+      <security:authentication-provider>
+         <security:user-service>
+            <security:user name="admin" password="123456" authorities="ROLE_USER"/>
+            <security:user name="admin" password="admin" authorities="ROLE_USER, ROLE_ADMIN"/>
+         </security:user-service>
+      </security:authentication-provider>
+   </security:authentication-manager> -->
+       	
+
+	<!-- declares support for general annotations such as @Required, @Autowired, 
+		@PostConstruct, -->
+	<context:annotation-config></context:annotation-config>
+
+	<!-- 自动为切面创建代理 -->
+	<!--<aop:aspectj-autoproxy></aop:aspectj-autoproxy>-->
+
+	<!-- 注册切面 -->
+	<!--<bean id="beforeAdvice" class="com.lql.aspect.BeforeAccessAspect"></bean>-->
+
+	<!-- 配置前置增强 -->
+	<!--<aop:config>-->
+		<!--<aop:aspect ref="beforeAdvice">-->
+			<!--<aop:pointcut id="acccess_pointcut"-->
+				<!--expression="execution(* com.**.service..*.*(..)) and args(id)" />-->
+			<!--<aop:before method="beforeAdvice" arg-names="id"-->
+				<!--pointcut-ref="acccess_pointcut" />-->
+		<!--</aop:aspect>-->
+	<!--</aop:config>-->
+
+	<!--&lt;!&ndash; 配置后置增强 &ndash;&gt;-->
+	<!--<aop:config>-->
+		<!--<aop:aspect ref="beforeAdvice">-->
+			<!--<aop:after method="afterAdvice2" pointcut="execution(* com.**.service..*.*(..))" />-->
+		<!--</aop:aspect>-->
+	<!--</aop:config>-->
+
+
+	<!-- 配置数据源 -->
+	<!-- 配置数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close" p:driverClassName="${jdbc.driverClassName}"
+		p:url="${jdbc.url}" p:username="${jdbc.username}" p:password="${jdbc.password}">
+	</bean>
+
+
+	<!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动扫描mapping.xml文件 -->
+		<property name="mapperLocations" value="classpath:mapping/*.xml"></property>
+		<!-- 配置MyBatis分页插件 -->
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageHelper">
+					<property name="properties">
+						<value>
+							dialect=mysql
+							reasonable=true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+
+	<!-- DAO接口所在包名，Spring会自动查找其下的类 , 这个bean会自动将Mybatis的mapper文件与dao借口建立映射关联 
+		并在Spring容器中注册相应的dao 前提是mapper文件的namespace与dao的路径保持一致 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.lql.dao" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+
+	<!-- 支持注解控制事务管理 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- -->
+	<!--<bean id="xstreamMarshaller" class="org.springframework.oxm.xstream.XStreamMarshaller">-->
+		<!--&lt;!&ndash; 设置类的别名 &ndash;&gt;-->
+		<!--<property name="aliases">-->
+			<!--<map>-->
+				<!--<entry key="user" value="com.lql.domain.User"></entry>-->
+			<!--</map>-->
+		<!--</property>-->
+
+	<!--</bean>-->
+
+</beans>

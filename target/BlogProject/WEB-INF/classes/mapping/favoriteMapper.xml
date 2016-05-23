@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.FavoriteMapper">
+    <select id="queryFavoritesByUserId" resultMap="resultFavoriteMap" parameterType="java.lang.String">
+        SELECT * FROM tb_favorite f , tb_blog b WHERE f.blogId = b.blogId AND f.userId=#{userId}
+    </select>
+
+    <resultMap type="com.lql.domain.Favorite" id="resultFavoriteMap">
+        <result column="id" property="id"/>
+        <result column="userId" property="userId"></result>
+        <association property="blog" javaType="com.lql.domain.Blog">
+            <result column="blogId" property="blogId"/>
+            <result column="blogTitle" property="blogTitle"/>
+            <result column="blogText" property="blogText"/>
+            <result column="publishDate" property="publishDate"/>
+            <result column="pictures" property="pictures"/>
+            <result column="css" property="css"/>
+            <result column="viewTimes" property="viewTimes"/>
+            <result column="isComented" property="isComented"/>
+            <association  property="user" javaType="com.lql.domain.User">
+                <result column="userId" property="userId"/>
+                <result column="userName" property="userName"/>
+                <result column="password" property="password"/>
+                <result column="email" property="email"/>
+                <result column="profession" property="profession"/>
+                <result column="address" property="address"/>
+                <result column="introduction" property="introduction"/>
+                <result column="lastVisitIP" property="lastVisitIP"/>
+                <result column="lastVisitTime" property="lastVisitTime"/>
+                <result column="registeDate" property="registeDate"/>
+                <result column="pictureUrl" property="pictureUrl"/>
+                <result column="role" property="role"/>
+            </association>
+            <association property="blogKind" javaType="com.lql.domain.BlogKind">
+                <result column="kindId" property="kindId"></result>
+                <result column="kindName" property="kindName"></result>
+            </association>
+        </association>
+    </resultMap>
+
+    <select id="queryFavoritesCount" resultType="java.lang.Integer" parameterType="java.lang.String">
+        SELECT count(*) FROM tb_favorite WHERE userId=#{userId}
+    </select>
+
+    <insert id="addNewFavorite" parameterType="com.lql.domain.Favorite">
+        INSERT INTO tb_favorite(userId,blogId) VALUES (#{userId},#{blog.blogId})
+    </insert>
+
+    <delete id="deleteFavoriteByFavorite" parameterType="com.lql.domain.Favorite">
+        DELETE FROM tb_favorite WHERE userId = #{userId} AND blogId = #{blog.blogId}
+    </delete>
+
+    <select id="queryFavoriteByFavorite" resultType="java.lang.Integer" parameterType="com.lql.domain.Favorite">
+        SELECT COUNT(*) FROM tb_Favorite WHERE userId = #{userId} AND blogId = #{blog.blogId}
+    </select>
+
+</mapper>

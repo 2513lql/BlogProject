@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.CommentMapper">
+    <select id="queryCommentsByBlogId" resultMap="resultCommentMap" parameterType="java.lang.Integer">
+        SELECT * FROM tb_comment c , tb_user u WHERE c.userId = u.userId AND c.blogId=#{blogId}
+    </select>
+
+    <resultMap type="com.lql.domain.Comment" id="resultCommentMap">
+        <result column="commentId" property="commentId"/>
+        <result column="blogId" property="blogId"/>
+        <result column="content" property="content"/>
+        <result column="commentDate" property="commentDate"/>
+        <association  property="user" javaType="com.lql.domain.User">
+            <result column="userId" property="userId"/>
+            <result column="userName" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="email" property="email"/>
+            <result column="profession" property="profession"/>
+            <result column="address" property="address"/>
+            <result column="introduction" property="introduction"/>
+            <result column="lastVisitIP" property="lastVisitIP"/>
+            <result column="lastVisitTime" property="lastVisitTime"/>
+            <result column="registeDate" property="registeDate"/>
+            <result column="pictureUrl" property="pictureUrl"/>
+            <result column="role" property="role"/>
+        </association>
+    </resultMap>
+
+    <insert id="addNewComment" parameterType="com.lql.domain.Comment">
+        INSERT INTO tb_comment(blogId,content,commentDate,userId) VALUES(#{blogId},#{content},#{commentDate},#{user.userId})
+    </insert>
+
+    <delete id="deleteCommentById" parameterType="com.lql.domain.Comment">
+        DELETE FROM tb_comment WHERE commentId=#{commentId} AND userId=#{user.userId}
+    </delete>
+
+</mapper>

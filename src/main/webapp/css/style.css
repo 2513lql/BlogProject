@@ -1,0 +1,62 @@
+
+.slideimgheight {
+    height: 300px;
+}
+
+.elemarintop{
+    margin-top: 30px;
+}
+
+.textcenter{
+    text-align: center;
+}
+/*body{*/
+    /*background-color: #f8f8f8;*/
+/*}*/
+
+.footer{
+    width: 100%;
+    margin-top: 50px;
+    height: 50px;
+    text-align: center;
+    color: #9d9d9d;
+    padding-top: 15px;
+    margin-bottom: 0px;
+}
+.footerbg{
+    background-color: #222;
+}
+
+.containerminheight{
+    min-height: 2000px;
+}
+.over{
+    color: #000000;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+}
+.headImg{
+    width: 250px;
+    height: 250px;
+    background-color: antiquewhite;
+}
+
+.userinfobox{
+    height: 250px;
+    background-color: blueviolet;
+}
+
+.iconstyle{
+    font-size: 20px;
+    cursor: pointer;
+    display: none;
+}
+
+a{
+    cursor: pointer;
+}
+
+

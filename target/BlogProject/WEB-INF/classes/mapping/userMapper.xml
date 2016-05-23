@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+	例如namespace="com.lql.mapping.userMapper"就是com.lql.mapping(包名)+userMapper(userMapper.xml文件去除后缀) -->
+
+<mapper namespace="com.lql.dao.UserMapper">
+
+    <select id="queryUserInfoByUserNameOrEmail" resultMap="resultUserMap" parameterType="java.lang.String">
+        SELECT * FROM tb_user WHERE userName=#{param} OR email=#{param}
+    </select>
+
+    <resultMap type="com.lql.domain.User" id="resultUserMap">
+            <result column="userId" property="userId"/>
+            <result column="userName" property="userName"/>
+            <result column="password" property="password"/>
+            <result column="email" property="email"/>
+            <result column="profession" property="profession"/>
+            <result column="address" property="address"/>
+            <result column="introduction" property="introduction"/>
+            <result column="lastVisitIP" property="lastVisitIP"/>
+            <result column="lastVisitTime" property="lastVisitTime"/>
+            <result column="registeDate" property="registeDate"/>
+            <result column="pictureUrl" property="pictureUrl"/>
+            <result column="role" property="role"/>
+    </resultMap>
+
+    <insert id="saveUserInfo" parameterType="com.lql.domain.User">
+        INSERT INTO tb_user(userId,userName,email,password,registeDate,role) VALUES(#{userId},#{userName},#{email},#{password},#{registeDate},#{role})
+    </insert>
+
+    <update id="updateUserInfo" parameterType="com.lql.domain.User">
+        UPDATE tb_user
+        <set>
+          <if test="password != null">password=#{password},</if>
+          <if test="lastVisitIp != null">lastVisitIp=#{lastVisitIp},</if>
+          <if test="lastVisitDate != null">lastVisitDate=#{lastVisitDate},</if>
+          <if test="profession != null">profession=#{profession},</if>
+          <if test="address != null">address=#{address},</if>
+          <if test="introduction != null">introduction=#{introduction},</if>
+          <if test="pictureUrl != null">pictureUrl=#{pictureUrl},</if>
+        </set>
+        WHERE userId=#{userId}
+    </update>
+
+    <delete id="deleteUserByUserId" parameterType="java.lang.String">
+        DELETE FROM tb_user WHERE userId=#{userId}
+    </delete>
+
+</mapper>

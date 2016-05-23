@@ -10,11 +10,16 @@ import java.util.List;
 public interface BlogMapper {
 
     public List<Blog> queryBlogs();
+    public List<Blog> queryBlogsByKind(Integer blogKindId);
     public List<Blog> queryBlogsByUserId(String userId);
     public Blog queryBlogByBlogId(Integer blogId);
+    public int queryBlogsCount();
+    public int queryBlogsCountByKind(Integer blogKindId);
     public void addNewBlog(Blog blog);
     public void deleteBlogByBlogId(Integer blogId);
-    public void updateCommentedState(Blog blog);
+    public void updateCommentTimes(Integer blogId);
     public void updateViewTimes(Integer blogId);
     public void updateBlogInfo(Blog blog);
+
+
 }
