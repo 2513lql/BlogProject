@@ -71,7 +71,7 @@
     </error-page>
 
     <welcome-file-list>
-        <welcome-file>/WEB-INF/views/test/editor.html</welcome-file>
+        <welcome-file>/WEB-INF/views/main.jsp</welcome-file>
     </welcome-file-list>
 
 </web-app>

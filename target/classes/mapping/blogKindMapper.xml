@@ -8,12 +8,28 @@
         select * from tb_blogkind
     </select>
 
+    <select id="queryBlogKindByKindName" parameterType="java.lang.String" resultMap="resultBlogKindMap">
+        SELECT * FROM tb_blogkind WHERE kindName=#{kindName}
+    </select>
     <resultMap type="com.lql.domain.BlogKind" id="resultBlogKindMap">
         <result column="kindId" property="kindId"/>
         <result column="kindName" property="kindName"/>
+        <result column="blogsCount" property="blogsCount"/>
     </resultMap>
 
-    <insert id="addNewBlogKind" parameterType="java.lang.String">
-        INSERT INTO tb_blogkind(kindName) VALUES (#{kindName})
+    <insert id="addNewBlogKind" useGeneratedKeys="true" keyProperty="kindId" parameterType="com.lql.domain.BlogKind">
+        INSERT INTO tb_blogkind(kindName,blogsCount) VALUES (#{kindName},${0})
     </insert>
+
+    <update id="updateBlogKindName" parameterType="com.lql.domain.BlogKind">
+        UPDATE tb_blogkind SET kindName=#{kindName} WHERE kindId=#{kindId}
+    </update>
+
+    <update id="addBlogCount" parameterType="java.lang.Integer">
+      UPDATE tb_blogkind SET blogsCount = blogsCount + 1 WHERE kindId=#{kindId}
+    </update>
+
+    <delete id="deleteBlogKind" parameterType="java.lang.Integer">
+        DELETE FROM tb_blogKind WHERE kindId = #{kindId}
+    </delete>
 </mapper>

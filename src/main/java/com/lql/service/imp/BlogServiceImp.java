@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LQL on 2016/5/7.
@@ -78,5 +79,17 @@ public class BlogServiceImp implements BlogService{
 
     public int getBlogsCountByKind(Integer blogKindId) {
         return blogMapper.queryBlogsCountByKind(blogKindId);
+    }
+
+    public void batchUpdateBlogKind(Map<String ,Object> map) {
+        blogMapper.batchUpdateBlogKind(map);
+    }
+
+    public void batchInsertBlog(List<Blog> blogs) {
+        blogMapper.batchInsertBlog(blogs);
+    }
+
+    public void batchDeleteBlog(List<Integer> idList) {
+        blogMapper.batchDeleteBlog(idList);
     }
 }

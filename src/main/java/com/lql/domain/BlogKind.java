@@ -11,6 +11,7 @@ public class BlogKind implements Serializable{
 
     private Integer kindId;
     private String kindName;
+    private Integer blogsCount;
 
     public Integer getKindId() {
         return kindId;
@@ -25,6 +26,32 @@ public class BlogKind implements Serializable{
     }
 
     public void setKindName(String kindName) {
+        this.kindName = kindName;
+    }
+
+    public Integer getBlogsCount() {
+        return blogsCount;
+    }
+
+    public void setBlogsCount(Integer blogsCount) {
+        this.blogsCount = blogsCount;
+    }
+
+    public BlogKind(){
+
+    }
+    public BlogKind(Integer kindId){
+        this.kindId = kindId;
+    }
+    public BlogKind(Integer kindId,String kindName){
+        this(kindId);
+        this.kindName = kindName;
+    }
+    public BlogKind(Integer kindId,String kindName,Integer blogsCount){
+        this(kindId,kindName);
+        this.blogsCount = blogsCount;
+    }
+    public BlogKind(String kindName){
         this.kindName = kindName;
     }
 }

@@ -10,3 +10,11 @@ function addEvent(obj,event,eventHandler){
     }
 }
 
+/**
+ * 删除左右两边空格
+ * @returns {string}
+ */
+String.prototype.trim=function()
+{
+    return this.replace(/(^\s*)|(\s*$)/g,'');
+}

@@ -69,6 +69,7 @@
 
     </insert>
 
+
     <delete id="deleteBlogByBlogId" parameterType="java.lang.Integer">
         DELETE FROM tb_blog WHERE blogId=#{blogId}
     </delete>
@@ -92,4 +93,45 @@
         </set>
         WHERE blogId=#{blogId}
     </update>
+
+    <!--批量更新-->
+    <!--
+        Map<String,Object> map = HashMap<String,Object>
+        map.put("blogKind","");
+        map.put("blogList",blogs);
+
+    -->
+    <update id="batchUpdateBlogKind" parameterType="java.util.Map">
+
+        UPDATE tb_blog SET blogKind = #{blogKind} WHERE blogId in
+        <foreach collection="blogList" item="item" open="(" close=")" index="index" separator=",">
+            #{item.blogId}
+        </foreach>
+    </update>
+
+    <!-- 批量查询 传入参数id集合-->
+    <!--<select id="batchQueryBlog" resultMap="resultBlogMap">-->
+
+      <!--SELECT * FROM tb_blog WHERE blogId IN-->
+        <!--<foreach collection="idList" item="item" open="(" close=")" index="index" separator=",">-->
+            <!--#{idList}-->
+        <!--</foreach>-->
+    <!--</select>-->
+
+    <!--批量插入数据-->
+    <insert id="batchInsertBlog" parameterType="java.util.List">
+        INSERT INTO tb_blog(blogTitle,blogText,blogKind,publishDate,userId,pictures,css,viewTimes,commentTimes)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," open="" close="">
+            (#{item.blogTitle},#{item.blogText},#{item.blogKind.kindId},#{item.publishDate},#{item.user.userId},#{item.pictures},#{item.css},${0},${0})
+        </foreach>
+    </insert>
+
+    <!--批量删除数据-->
+    <delete id="batchDeleteBlog" parameterType="java.util.List">
+        DELETE FROM tb_blog WHERE blogId IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
 </mapper>

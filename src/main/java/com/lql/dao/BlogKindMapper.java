@@ -1,5 +1,6 @@
 package com.lql.dao;
 
+import com.lql.domain.Blog;
 import com.lql.domain.BlogKind;
 
 import java.util.List;
@@ -10,5 +11,9 @@ import java.util.List;
 public interface BlogKindMapper {
 
     public List<BlogKind> queryBlogKinds();
-    public void addNewBlogKind(String kindName);
+    public int addNewBlogKind(BlogKind blogKind);
+    void updateBlogKindName(BlogKind blogKind);
+    void addBlogCount(Integer kindId);
+    BlogKind queryBlogKindByKindName(String kindName);
+    void deleteBlogKind(Integer kindId);
 }

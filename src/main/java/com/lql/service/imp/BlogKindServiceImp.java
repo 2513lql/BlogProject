@@ -29,7 +29,23 @@ public class BlogKindServiceImp implements BlogKindService {
         return blogKinds;
     }
 
-    public void addNewBlogKind(String kindName) {
-        blogKindMapper.addNewBlogKind(kindName);
+    public int addNewBlogKind(BlogKind blogKind) {
+       return blogKindMapper.addNewBlogKind(blogKind);
+    }
+
+    public void updateBlogKindName(BlogKind blogKind) {
+        blogKindMapper.updateBlogKindName(blogKind);
+    }
+
+    public void addBlogCount(Integer kindId) {
+        blogKindMapper.addBlogCount(kindId);
+    }
+
+    public BlogKind queryBlogKindByName(String kindName) {
+       return blogKindMapper.queryBlogKindByKindName(kindName);
+    }
+
+    public void deleteBlogKind(Integer kindId) {
+        blogKindMapper.deleteBlogKind(kindId);
     }
 }

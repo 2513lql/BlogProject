@@ -3,6 +3,7 @@ package com.lql.service;
 import com.lql.domain.Blog;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LQL on 2016/5/7.
@@ -22,5 +23,7 @@ public interface BlogService {
     public void updateBlogInfo(Blog blog);
     public int getBlogsCount();
     public int getBlogsCountByKind(Integer blogKindId);
-
+    void batchUpdateBlogKind(Map<String,Object> map);
+    void batchInsertBlog(List<Blog> blogs);
+    void batchDeleteBlog(List<Integer> idList);
 }

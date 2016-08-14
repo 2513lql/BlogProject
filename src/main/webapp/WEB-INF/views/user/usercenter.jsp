@@ -7,14 +7,20 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%
+    String path = request.getContextPath();
+%>
 <html>
 <head>
     <title>用户中心</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/css/bootstrap.min.css">
-    <script type="text/javascript" src="../../../js/jquery-1.4.4.min.js"></script>
-    <script type="text/javascript" src="../../../js/xheditor-1.2.2.min.js"></script>
-    <script type="text/javascript" src="../../../js/zh-cn.js"></script>
+
+    <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.all.min.js"></script>
+    <!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+    <!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+    <script type="text/javascript" charset="utf-8" src="/ueditor/lang/zh-cn/zh-cn.js"></script>
 
     <script type="text/javascript">
 
@@ -31,7 +37,8 @@
             var blogManageBlogKind = document.getElementById("blogManageBlogKind");
             var blogPublishBtn = document.getElementById("blogPublishBtn");
             addEvent(blogManageBlogKind, 'change', handleBlogKindChange);
-            addEvent(blogPublishBtn,'click',checkBlog);
+//            addEvent(blogPublishBtn, 'click', checkBlog);
+            blogPublishBtn.onclick = checkBlog;
 
         }
 
@@ -44,7 +51,7 @@
             var html = '';
             for (var i = 0; i < blogs.length; i++) {
                 html += '<tr><td>';
-                html += '<a href="/blog/blogdetail.action?blogId=' + blogs[i]["blogId"] + '">';
+                html += '<a href="<%=path%>/blog/blogdetail.action?blogId=' + blogs[i]["blogId"] + '">';
                 html += blogs[i]["blogTitle"] + '</a></td>';
                 html += '<td>' + blogs[i]["publishDate"] + '</td>';
                 html += '<td>' + blogs[i]["viewTimes"] + '</td>';
@@ -56,7 +63,10 @@
             $("#blogsContainer").html(html);
         }
         window.onload = function () {
-            setEvent();
+//            setEvent();
+            alert("hello world");
+            var blogPublishBtn = document.getElementById("blogPublishBtn");
+            blogPublishBtn.onclick = checkBlog;
             dividePage(${recordsCount}, -1);
         };
 
@@ -76,7 +86,7 @@
         function getBlogsByBlogKind(blogKindId, currentPage) {
             $.ajax({
                 async: false,
-                url: "/blog/getallblogs.action",
+                url:"<%=path%>/blog/getallblogs.action",
                 data: {'currentPage': currentPage, 'pageSize': 10, 'blogKindId': blogKindId},
                 type: "POST",
                 dataType: "json",//服务器返回数据类型
@@ -92,7 +102,7 @@
         function getBlogByCurrentPage(currentPage, blogKindId) {
             $.ajax({
                 async: false,
-                url: "/blog/currentpageblogs.action",
+                url: "<%=path%>/blog/currentpageblogs.action",
                 data: {'currentPage': currentPage, 'pageSize': 10, 'blogKindId': blogKindId},
                 type: "POST",
                 dataType: "json",//服务器返回数据类型
@@ -108,12 +118,11 @@
             var blogKindId = $("#blogKindIdHidden").val();
             $.ajax({
                 async: false,
-                url: "/blog/deleteblog.action",
+                url: "<%=path%>/blog/deleteblog.action",
                 data: {'currentPage': currentPage, 'pageSize': 10, 'blogKindId': blogKindId, 'blogId': blogId},
                 type: "POST",
                 dataType: "json",//服务器返回数据类型
                 success: function (data) {
-                    console.log(data);
                     parseBlogData(data);
                 }
             });
@@ -121,65 +130,223 @@
 
         function checkBlog() {
             var blogKind = document.getElementById("blogPublishBlogKind").value;
-            var html = '<div class="alert alert-danger" style="width: 40%;height: 30px;padding: 10px" role="alert">';
+            var html = '<span style="color: #d9534f;font-size: larger;">';
             if (blogKind == -1) {
-                html += '请选择文章类别</div>';
+                html += '请选择文章类别</span>';
                 $("#publishInfo").html(html);
                 return;
             }
             var blogTitle = document.getElementById("blogTitle").value;
-            if(blogTitle == null || blogTitle.mytrim().length == 0){
-                html += '请输入文章标题</div>';
+            if (blogTitle == null || blogTitle.trim().length == 0) {
+                html += '请输入文章标题</span>';
                 $("#publishInfo").html(html);
                 return;
             }
-            var blogContent = document.getElementById("blogContent").value;
-            if(blogContent == null || blogContent.mytrim().length == 0){
-                html += '请编辑文章内容</div>';
+            var blogContent = UE.getEditor('editor').getContent();
+            if (blogContent == null || blogContent.trim().length == 0) {
+                html += '请编辑文章内容</span>';
                 $("#publishInfo").html(html);
                 return;
+            }
+            publishBlog(blogKind, blogTitle, blogContent);
+        }
+
+        function publishBlog(blogKind, blogTitle, blogContent) {
+            alert("hello");
+            $.ajax({
+                async: false,
+                url: "<%=path%>/blog/publishblog.action",
+                data: {'blogKind': blogKind, 'blogTitle': blogTitle, 'blogContent': blogContent},
+                type: "POST",
+                dataType: "json",//服务器返回数据类型
+                success: function (data) {
+                    window.location.reload();
+                    var html = '<span class="text-success" style="font-size: larger">文章发表成功</span>';
+                    $("#publishInfo").html(html);
+
+                }
+            });
+        }
+
+
+        function editBlogKind(kindId,kindName){
+
+            td = document.getElementById(kindName);
+            console.log(td);
+            var regex = new RegExp("input",'gi');
+            if(regex.test(td.innerHTML)){
+                return;
+            }
+            old = td.innerHTML;
+            oldKindName = kindName;
+            var html = '<input class="blogkind-editbox" value="'+kindName+'"/>';
+            html += '<span class="blogkind-editbtn"><a onclick="saveBlogKind('+kindId;
+            html += ')">保存</a></span>';
+            html += '<span class="blogkind-editbtn"><a onclick="cancelEditKind()">取消</a></span>';
+            td.innerHTML = html;
+        }
+
+        //删除文章分类
+        function deleteBlogKindById(kindId){
+            $.ajax({
+                async: false,
+                url: "<%=path%>/blog/deleteblogkind.action",
+                data:{'kindId':kindId},
+                type: "POST",
+                dataType: "JSON",//服务器返回数据类型
+                success: function (data) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        function saveBlogKind(kindId){
+            var editBox = document.getElementsByClassName("blogkind-editbox")[0];
+            var newKindName = editBox.value.trim();
+            var msgHtml = '<span class="alertText">';
+            var tbHtml = td.innerHTML.substring(0,192);
+            if(newKindName == null || newKindName.length == 0){
+                msgHtml += '类别不能为空</span>';
+                td.innerHTML = tbHtml + msgHtml;
+                return;
+            }else if(newKindName == oldKindName){
+                msgHtml += '已存在该类别</span>';
+                td.innerHTML = tbHtml + msgHtml;
+                return;
+            }else{
+                $.ajax({
+                    async:false,
+                    url:"<%=path%>/blog/editblogkind.action",
+                    data:{'kindId':kindId,'kindName':newKindName},
+                    type:'POST',
+                    dataType:'JSON',
+                    success:function(data){
+                        if(data["msg"] == "fail"){
+                            msgHtml += '已存在该类别</span>';
+                            td.innerHTML = tbHtml + msgHtml;
+                        }else {
+                            parseBlogKindData(data);
+                            parseBlogKindData2(data);
+                        }
+                    }
+                });
             }
         }
 
-        function publishBlog(blogKind,blogTitle,blogContent){
-            alert("文章发表成功");
+        //取消编辑
+        function cancelEditKind(){
+            td.innerHTML = old;
+        }
+
+        //对类别更改的html进行解析
+        function parseBlogKindData(data){
+            var blogKindContainer = document.getElementById("blogKindContainer");
+            var blogKinds = data["blogKinds"];
+            var html = '';
+            for(var i = 0,len = blogKinds.length ; i < len;i++){
+                html += '<tr><td id="';
+                html += blogKinds[i]["kindName"] + '"><a href="#">';
+                html += blogKinds[i]["kindName"] + '</a></td>';
+                html += '<td>' + blogKinds[i]["blogsCount"]+'</td>';
+                html += '<td><a onclick="editBlogKind(' + blogKinds[i]["kindId"] +',\'' + blogKinds[i]["kindName"]+'\')">编辑</a>';
+                html += '&nbsp';
+                html += '<a onclick="deleteBlogKindById(' + blogKinds[i]["KindId"] +')">删除</a>';
+                html += '</td></tr>';
+            }
+            blogKindContainer.innerHTML = html;
+        }
+
+
+        //对类别选择进行解析
+        function parseBlogKindData2(data){
+            var blogManageBlogKind = document.getElementById("blogManageBlogKind");
+            var blogPublishBlogKind = document.getElementById("blogPublishBlogKind");
+            var blogKinds = data["blogKinds"];
+            var html = '<option value="-1">文章分类</option>';
+            for(var i = 0,len = blogKinds.length ; i < len;i++) {
+                html += '<option value=">' + blogKinds[i]["kindId"] +'">' + blogKinds[i]["kindName"]+'</option>';
+            }x
+            blogManageBlogKind.innerHTML = html;
+            blogPublishBlogKind.innerHTML = html;
+        }
+
+        //添加文章分类
+        function addBlogKind(){
+            var blogKindName = document.getElementById("kindNameEdit").value.trim();
+            var html = '<span class="alertText">';
+            if(blogKindName == null || blogKindName.length == 0){
+                html += '类别不能为空</span>';
+                $("#addblogkindinfo").html(html);
+            }else{
+                $.ajax({
+                    async:false,
+                    url:'<%=path%>/blog/addblogkind.action',
+                    data:{'kindName':blogKindName},
+                    type:'POST',
+                    dataType:'JSON',
+                    success:function(data){
+                        if(data["msg"] == "fail"){
+                            html += '该类已存在</span>';
+                            $("#addblogkindinfo").html(html);
+                        }else{
+                            var blogKindContainer = document.getElementById("blogKindContainer");
+                            var blogKind = data["blogKinds"][0];
+                            console.log(blogKind);
+                            var len = blogKindContainer.rows.length;
+                            blogKindContainer.insertRow(len);
+                            var cell0 = blogKindContainer.rows[len].insertCell(0);
+                            cell0.id = blogKind["kindName"];
+                            cell0.innerHTML = '<a href="#">'+blogKind["kindName"]+'</a>';
+                            var cell1 = blogKindContainer.rows[len].insertCell(1);
+                            cell1.innerHTML = blogKind["blogsCount"];
+                            var cell2 = blogKindContainer.rows[len].insertCell(2);
+                            console.log(blogKind["kindName"]);
+                            cell2.innerHTML = '<a onclick="editBlogKind('+blogKind["kindId"]+',\''+blogKind["kindName"]+'\')">编辑</a>&nbsp<a onclick="deleteBlogById('+blogKind["kindId"]+')">删除</a>';
+                            $("#addblogkindinfo").html("");
+                            document.getElementById("kindNameEdit").value = "";
+                        }
+                    }
+                });
+            }
+        }
+        function removeKindInfo(){
+            $("#addblogkindinfo").html("");
         }
     </script>
-
 </head>
 <body>
 <%@include file="/WEB-INF/views/header.jsp" %>
 
 
-<div class="modal fade" id="mymodalimg">
-    <div class="modal-dialog">
-        <div class="modal-content modal-sm">
+<%--<div class="modal fade" id="mymodalimg">--%>
+<%--<div class="modal-dialog">--%>
+<%--<div class="modal-content modal-sm">--%>
 
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
-                        class="sr-only">Close</span></button>
-                <h4 class="modal-title"></h4>
-            </div>
+<%--<div class="modal-header">--%>
+<%--<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span--%>
+<%--class="sr-only">Close</span></button>--%>
+<%--<h4 class="modal-title"></h4>--%>
+<%--</div>--%>
 
-            <div class="modal-body">
-                <div class="input-group col-xs-12">
-                    <input type="text" class="form-control" placeholder="用户名或邮箱" aria-describedby="basic-addon1">
-                </div>
-                <div class="input-group col-xs-12" style="margin-top: 15px;">
-                    <input type="password" class="form-control" placeholder="密码" aria-describedby="basic-addon2">
-                </div>
-            </div>
+<%--<div class="modal-body">--%>
+<%--<div class="input-group col-xs-12">--%>
+<%--<input type="text" class="form-control" placeholder="用户名或邮箱" aria-describedby="basic-addon1">--%>
+<%--</div>--%>
+<%--<div class="input-group col-xs-12" style="margin-top: 15px;">--%>
+<%--<input type="password" class="form-control" placeholder="密码" aria-describedby="basic-addon2">--%>
+<%--</div>--%>
+<%--</div>--%>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-block">登陆</button>
-                <button type="button" class="btn btn-default btn-block" data-dismiss="modal">关闭</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
+<%--<div class="modal-footer">--%>
+<%--<button type="button" class="btn btn-primary btn-block">登陆</button>--%>
+<%--<button type="button" class="btn btn-default btn-block" data-dismiss="modal">关闭</button>--%>
+<%--</div>--%>
+<%--</div>--%>
+<%--<!-- /.modal-content -->--%>
+<%--</div>--%>
+<%--<!-- /.modal-dialog -->--%>
+<%--</div>--%>
+<%--<!-- /.modal -->--%>
 
 
 <div class="container" style="min-height: 532px;">
@@ -277,14 +444,15 @@
         <div class="col-md-10">
             <ul id="myTab" class="nav nav-tabs">
                 <li class="active">
-                    <a href="#basicMsg" data-toggle="tab">
+                    <a href="#blogManage" data-toggle="tab">
                         文章管理
                     </a>
                 </li>
                 <li><a href="#operationMsg" data-toggle="tab">发表文章</a></li>
+                <li><a href="#blogKindManage" data-toggle="tab">类别管理</a></li>
             </ul>
             <div id="myTabContent" class="tab-content">
-                <div class="tab-pane fade in active" id="basicMsg">
+                <div class="tab-pane fade in active" id="blogManage">
                     <div class="row">
                         <div class="col-md-3" style="padding-top: 20px;padding-bottom: 20px;">
                             <span>文章类别:</span>
@@ -299,7 +467,6 @@
 
                         </div>
                     </div>
-                    <%--<p>自强学堂是一个提供最新的web技术的站点，我们将将国外的精华教程收集到国内, 让每个人享受平等学习的机会!我们的目标是只要你坚持来自强学堂,我们提供的教程就能让你变得更强!</p>--%>
                     <table class="table table-striped table-bordered">
                         <thead>
                         <tr>
@@ -350,9 +517,7 @@
                         </div>
                     </div>
                     <form method="post" action="#">
-                        <textarea id="blogContent" name="editor" class="xheditor" rows="20" style="width: 80%;height: 400px">
-
-                        </textarea><br/><br/>
+                        <script id="editor" type="text/plain" style="height:500px;"></script>
                     </form>
                     <div class="row">
                         <div class="col-md-2">
@@ -361,7 +526,40 @@
                         <div class="col-md-2">
                             <button class="btn btn-primary" id="blogSaveBtn" type="button">保存到草稿</button>
                         </div>
-                        <div class="col-md-8" id="publishInfo">
+                        <div class="col-md-8" id="publishInfo" style="padding-top: 10px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="blogKindManage">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th style="width: 50%;">类别</th>
+                            <th style="width: 20%;">文章</th>
+                            <th style="width: 30%;">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="blogKindContainer">
+                        <c:forEach items="${blogKinds}" var="blogKind">
+                            <tr>
+                                <td id="${blogKind.kindName}"><a href="#"> ${blogKind.kindName}</a></td>
+                                <td> ${blogKind.blogsCount}</td>
+                                <td>
+                                    <a onclick="editBlogKind('${blogKind.kindId}','${blogKind.kindName}')">编辑</a>
+                                    <a onclick="deleteBlogKindById('${blogKind.kindId}')">删除</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input class="blogkind-editbox" onkeypress="removeKindInfo()" name="kindName" id="kindNameEdit" required/>
+                            <button class="btn btn-primary btn-sm" onclick="addBlogKind()">添加类别</button>
+                        </div>
+                        <div class="col-md-8" id="addblogkindinfo">
+
                         </div>
                     </div>
 
@@ -370,18 +568,24 @@
             <div class="col-md-1"></div>
         </div>
     </div>
+</div>
 
-    <%--<%@include file="/WEB-INF/views/footer.jsp" %>--%>
+<%@include file="/WEB-INF/views/footer.jsp" %>
 
-    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 
-    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <!--分页导航条-->
-    <script src="/js/extendPagination.js"></script>
-    <!--项目js文件-->
-    <script src="../../../js/blogproject.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<!--分页导航条-->
+<script src="/js/extendPagination.js"></script>
+<!--项目js文件-->
+<script src="../../../js/blogproject.js"></script>
+<script>
+    var ue = UE.getEditor('editor').ready(function(){
+        this.setContent('内容');
+    });
+</script>
 </body>
 
 

@@ -11,5 +11,9 @@ import java.util.List;
 public interface BlogKindService {
 
     public List<BlogKind> getBlogKinds();
-    public void addNewBlogKind(String kindName);
+    public int addNewBlogKind(BlogKind blogKind);
+    void updateBlogKindName(BlogKind blogKind);
+    void addBlogCount(Integer kindId);
+    BlogKind queryBlogKindByName(String kindName);
+    void deleteBlogKind(Integer kindId);
 }

@@ -233,6 +233,11 @@
       <artifactId>jstl</artifactId>
       <version>1.2</version>
     </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
 
     <!-- Mybatis分页 -->
     <dependency>
@@ -293,6 +298,18 @@
       <artifactId>jackson-annotations</artifactId>
       <version>2.7.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>4.2.5.Final</version>
+    </dependency>
+    <!-- for JPA, use hibernate-entitymanager instead of hibernate-core -->
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
+      <version>4.2.5.Final</version>
+    </dependency>
+
   </dependencies>
   <build>
     <finalName>BlogProject</finalName>

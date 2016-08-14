@@ -11,7 +11,10 @@ import junit.framework.TestCase;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * BlogServiceImp Tester.
@@ -59,10 +62,23 @@ public class BlogServiceImpTest extends TestCase {
 //            blogService.addNewBlog(blog);
 //        }
 
-        List<Blog> blogs = blogService.getBlogsDividePages(5,10);
+        List<Blog> blogs = blogService.getBlogsDividePages(5, 10);
+        List<Integer> idList = new ArrayList<Integer>();
         for (Blog blog : blogs){
-            System.out.println(blog.getBlogText());
+            idList.add(blog.getBlogId());
         }
+        blogService.batchDeleteBlog(idList);
+//        blogService.batchInsertBlog(blogs);
+//        for (Blog blog : blogs){
+//            System.out.println(blog.getBlogId());
+//            blog.setBlogKind(new BlogKind(2));
+//        }
+
+//        Map<String,Object> map = new HashMap<String, Object>();
+//        map.put("blogKind",2);
+//        map.put("blogList",blogs);
+//        blogService.batchUpdateBlogKind(map);
+
 //        List<Blog> blogs = blogService.getBlogsByKind(1);
 //        System.out.println(blogs.get(0).getBlogText());
     }

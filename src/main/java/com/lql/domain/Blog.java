@@ -20,7 +20,6 @@ public class Blog implements Serializable{
     private String css;
     private Integer viewTimes;
     private int commentTimes;
-
     public Blog(){
 
     }

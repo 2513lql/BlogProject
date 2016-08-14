@@ -3,6 +3,7 @@ package com.lql.dao;
 import com.lql.domain.Blog;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by LQL on 2016/5/7.
@@ -20,6 +21,7 @@ public interface BlogMapper {
     public void updateCommentTimes(Integer blogId);
     public void updateViewTimes(Integer blogId);
     public void updateBlogInfo(Blog blog);
-
-
+    void batchUpdateBlogKind(Map<String,Object> map);
+    void batchInsertBlog(List<Blog> blogs);
+    void batchDeleteBlog(List<Integer> idList);
 }

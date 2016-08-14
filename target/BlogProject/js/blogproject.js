@@ -10,7 +10,11 @@ function addEvent(obj,event,eventHandler){
     }
 }
 
-/*去掉字符串前后空格*/
-String.prototype.mytrim=function(){
+/**
+ * 删除左右两边空格
+ * @returns {string}
+ */
+String.prototype.trim=function()
+{
     return this.replace(/(^\s*)|(\s*$)/g,'');
 }

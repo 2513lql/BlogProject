@@ -4,7 +4,6 @@
 (function ($) {
     $.fn.extendPagination = function (options) {
         var defaults = {
-            //pageId:'',
             totalCount: '',
             showPage: '5',
             limit: '3',
@@ -73,11 +72,14 @@
             }
 
             function callBack(curr) {
+
                 defaults.callback(curr, defaults.limit, totalCount);
             }
 
             currentObj.click(function (event) {
+
                 event.preventDefault();
+
                 var currPage = Number($(this).find('a').html()), activeObj = pageObj.find('li[class="active"]'),
                     activePage = Number(activeObj.find('a').html());
                 if (currPage == activePage) return false;
@@ -98,9 +100,9 @@
                         loopPageElement(minPage, maxPage)
                     }                  
                 }
-                activeObj.removeClass('active');
                 $.each(currentObj, function (index, thiz) {
                     if ($(thiz).find('a').html() == currPage) {
+                        activeObj.removeClass('active');
                         $(thiz).addClass('active');
                         callBack(currPage);
                     }
@@ -111,7 +113,8 @@
                 var activeObj = pageObj.find('li[class="active"]'), activePage = Number(activeObj.find('a').html());
                 if (activePage <= 1) return false;
                 if (totalPage > showPage) {
-                    var maxPage = activePage, minPage = 1;                  
+                    var maxPage = activePage, minPage = 1;
+                    alert(activeObj.prev().prev().attr('class'));
                     if ((activeObj.prev().prev().attr('class'))
                         && (activeObj.prev().prev().attr('class').indexOf('disabled')) >= 0) {
                         minPage = activePage - 1;
@@ -122,8 +125,8 @@
                 }
                 $.each(currentObj, function (index, thiz) {
                     if ($(thiz).find('a').html() == (activePage - 1)) {
-                        activeObj.removeClass('active');
-                        $(thiz).addClass('active');
+                        activeObj.removeClass('nav_active');
+                        $(thiz).addClass('nav_active');
                         callBack(activePage - 1);
                     }
                 });
@@ -131,7 +134,6 @@
             nextObj.click(function (event) {
                 event.preventDefault();
                 var activeObj = pageObj.find('li[class="active"]'), activePage = Number(activeObj.find('a').html());
-                console.log("activeObj" + activeObj);
                 if (activePage >= totalPage) return false;
                 if (totalPage > showPage) {
                     var maxPage = activePage, minPage = 1;                  

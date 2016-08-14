@@ -36,10 +36,14 @@ public class BlogKindServiceImpTest extends TestCase {
 
         ApplicationContext context = new ClassPathXmlApplicationContext("classpath:config/spring-mybatis.xml");
         BlogKindService blogKindService = context.getBean("blogKindService",BlogKindService.class);
-        List<BlogKind> blogKinds = blogKindService.getBlogKinds();
-        System.out.println(blogKinds.get(0).getKindName());
+//        List<BlogKind> blogKinds = blogKindService.getBlogKinds();
+//        System.out.println(blogKinds.get(0).getKindName());
+        BlogKind blogKind = new BlogKind();
+        blogKind.setKindName("aaa");
+        blogKindService.addNewBlogKind(blogKind);
+        System.out.println(blogKind.getKindId());
 
-        blogKindService.addNewBlogKind("java学习");
+
     }
 
     public static Test suite() {

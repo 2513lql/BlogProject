@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -54,6 +56,7 @@ public class UserController {
         }
         else {
             session.setAttribute("userName",user.getUserName());
+            session.setAttribute("userInfo",user);
             jsonObj.put("result",result);
             jsonObj.put("userName",user.getUserName());
             return jsonObj.toString();
